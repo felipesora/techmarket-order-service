@@ -15,7 +15,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: techmarket_identity
+          POSTGRES_DB: techmarket_order
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         ports:
