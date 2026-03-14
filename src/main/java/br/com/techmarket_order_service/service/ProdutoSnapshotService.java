@@ -62,9 +62,10 @@ public class ProdutoSnapshotService {
     }
 
     @Transactional
-    public void deletarProduto(Long id) {
-        var produto = buscarEntidadeProdutoPorId(id);
+    public ProdutoSnapshotResponseDTO deletarProduto(ProdutoSnapshotEventDTO dto) {
+        var produto = buscarPorIdMongo(dto.idMongo());
         produtoSnapshotRepository.delete(produto);
+        return converterParaResponseDTO(produto);
     }
 
     private ProdutoSnapshot buscarEntidadeProdutoPorId(Long id) {

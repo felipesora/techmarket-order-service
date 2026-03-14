@@ -20,7 +20,7 @@ public class ProdutoListener {
         System.out.println("Conteúdo: " + produtoDTO);
 
         var salvo = produtoSnapshotService.cadastrarProduto(produtoDTO);
-        System.out.printf("Produto com id: " + salvo.idMongo() + " salvo no banco com sucesso!");
+        System.out.println("Produto com id: " + salvo.idMongo() + " salvo no banco com sucesso!");
     }
 
     @RabbitListener(queues = "produto.atualizado")
@@ -29,6 +29,15 @@ public class ProdutoListener {
         System.out.println("Conteúdo: " + produtoDTO);
 
         var atualizado = produtoSnapshotService.atualizarProduto(produtoDTO);
-        System.out.printf("Produto com id: " + atualizado.idMongo() + " atualizado no banco com sucesso!");
+        System.out.println("Produto com id: " + atualizado.idMongo() + " atualizado no banco com sucesso!");
+    }
+
+    @RabbitListener(queues = "produto.removido")
+    public void recebeProdutoParaRemover(ProdutoSnapshotEventDTO produtoDTO) {
+        System.out.println("Mensagem recebida da fila de produtos removidos");
+        System.out.println("Conteúdo: " + produtoDTO);
+
+        var removido = produtoSnapshotService.deletarProduto(produtoDTO);
+        System.out.println("Produto com id: " + removido.idMongo() + " removido no banco com sucesso!");
     }
 }

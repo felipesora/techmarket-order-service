@@ -36,6 +36,11 @@ public class PedidoAMQPConfiguration {
     }
 
     @Bean
+    public Queue filaProdutosRemovidos() {
+        return QueueBuilder.nonDurable("produto.removido").build();
+    }
+
+    @Bean
     public TopicExchange topicExchange() {
         return ExchangeBuilder.topicExchange("produto.exchange").build();
     }
@@ -54,6 +59,14 @@ public class PedidoAMQPConfiguration {
                 .bind(filaProdutosAtualizados)
                 .to(topicExchange)
                 .with("produto.atualizado");
+    }
+
+    @Bean
+    public Binding bindProdutosRemovidos(Queue filaProdutosRemovidos, TopicExchange topicExchange) {
+        return BindingBuilder
+                .bind(filaProdutosRemovidos)
+                .to(topicExchange)
+                .with("produto.removido");
     }
 
     @Bean
