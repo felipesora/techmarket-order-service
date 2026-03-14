@@ -1,8 +1,7 @@
 package br.com.techmarket_order_service.service;
 
-import br.com.techmarket_order_service.dto.produtoSnapshot.ProdutoSnapshotCreateDTO;
+import br.com.techmarket_order_service.dto.produtoSnapshot.ProdutoSnapshotEventDTO;
 import br.com.techmarket_order_service.dto.produtoSnapshot.ProdutoSnapshotResponseDTO;
-import br.com.techmarket_order_service.dto.produtoSnapshot.ProdutoSnapshotUpdateDTO;
 import br.com.techmarket_order_service.model.ProdutoSnapshot;
 import br.com.techmarket_order_service.model.enums.StatusProduto;
 import br.com.techmarket_order_service.repository.ProdutoSnapshotRepository;
@@ -33,7 +32,7 @@ public class ProdutoSnapshotService {
     }
 
     @Transactional
-    public ProdutoSnapshotResponseDTO cadastrarProduto(ProdutoSnapshotCreateDTO dto) {
+    public ProdutoSnapshotResponseDTO cadastrarProduto(ProdutoSnapshotEventDTO dto) {
         ProdutoSnapshot produto = new ProdutoSnapshot();
         produto.setIdMongo(dto.idMongo());
         produto.setCodigo(dto.codigo());
@@ -48,8 +47,8 @@ public class ProdutoSnapshotService {
     }
 
     @Transactional
-    public ProdutoSnapshotResponseDTO atualizarProduto(Long id, ProdutoSnapshotUpdateDTO dto) {
-        ProdutoSnapshot produto = buscarEntidadeProdutoPorId(id);
+    public ProdutoSnapshotResponseDTO atualizarProduto(ProdutoSnapshotEventDTO dto) {
+        ProdutoSnapshot produto = buscarPorIdMongo(dto.idMongo());
 
         produto.setCodigo(dto.codigo());
         produto.setNome(dto.nome());
@@ -71,6 +70,12 @@ public class ProdutoSnapshotService {
     private ProdutoSnapshot buscarEntidadeProdutoPorId(Long id) {
         return produtoSnapshotRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Produto com id: " + id + " não encontrado"));
+    }
+
+    private ProdutoSnapshot buscarPorIdMongo(String idMongo) {
+        return produtoSnapshotRepository.findByIdMongo(idMongo)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Produto com idMongo: " + idMongo + " não encontrado"));
     }
 
     private ProdutoSnapshotResponseDTO converterParaResponseDTO(ProdutoSnapshot produto) {

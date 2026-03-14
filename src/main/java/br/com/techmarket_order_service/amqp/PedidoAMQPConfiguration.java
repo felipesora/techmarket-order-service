@@ -27,17 +27,33 @@ public class PedidoAMQPConfiguration {
 
     @Bean
     public Queue filaProdutosCriados() {
-        return QueueBuilder.nonDurable("produtos.criados").build();
+        return QueueBuilder.nonDurable("produto.criado").build();
     }
 
     @Bean
-    public FanoutExchange fanoutExchange() {
-        return ExchangeBuilder.fanoutExchange("produto.exchange").build();
+    public Queue filaProdutosAtualizados() {
+        return QueueBuilder.nonDurable("produto.atualizado").build();
     }
 
     @Bean
-    public Binding bindPagamentoPedido(FanoutExchange fanoutExchange) {
-        return BindingBuilder.bind(filaProdutosCriados()).to(fanoutExchange);
+    public TopicExchange topicExchange() {
+        return ExchangeBuilder.topicExchange("produto.exchange").build();
+    }
+
+    @Bean
+    public Binding bindProdutosCriados(Queue filaProdutosCriados, TopicExchange topicExchange) {
+        return BindingBuilder
+                .bind(filaProdutosCriados)
+                .to(topicExchange)
+                .with("produto.criado");
+    }
+
+    @Bean
+    public Binding bindProdutosAtualizados(Queue filaProdutosAtualizados, TopicExchange topicExchange) {
+        return BindingBuilder
+                .bind(filaProdutosAtualizados)
+                .to(topicExchange)
+                .with("produto.atualizado");
     }
 
     @Bean
