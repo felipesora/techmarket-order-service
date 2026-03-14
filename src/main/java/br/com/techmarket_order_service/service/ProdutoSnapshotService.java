@@ -35,6 +35,7 @@ public class ProdutoSnapshotService {
     @Transactional
     public ProdutoSnapshotResponseDTO cadastrarProduto(ProdutoSnapshotCreateDTO dto) {
         ProdutoSnapshot produto = new ProdutoSnapshot();
+        produto.setIdMongo(dto.idMongo());
         produto.setCodigo(dto.codigo());
         produto.setNome(dto.nome());
         produto.setPrecoUnitario(dto.precoUnitario());
