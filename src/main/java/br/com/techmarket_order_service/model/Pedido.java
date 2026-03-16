@@ -32,7 +32,7 @@ public class Pedido {
     @Column(name = "valor_total", nullable = false)
     private BigDecimal valorTotal;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "data_criacao")
     private LocalDateTime dataCriacao;
 
     @Enumerated(EnumType.STRING)
