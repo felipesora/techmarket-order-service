@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
-public record ProdutoSnapshotCreateDTO (
+public record ProdutoSnapshotEventDTO(
         @NotBlank(message = "O id mongodb do produto é obrigatório")
         @Size(min = 24, max = 24, message = "O id mongodb deve ter 24 caracteres")
         @JsonProperty("id_mongo")
