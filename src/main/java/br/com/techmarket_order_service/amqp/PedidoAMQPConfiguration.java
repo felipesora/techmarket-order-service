@@ -1,6 +1,7 @@
 package br.com.techmarket_order_service.amqp;
 
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -12,6 +13,16 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PedidoAMQPConfiguration {
+
+    @Bean
+    public RabbitAdmin criaRabbitAdmin(ConnectionFactory conn) {
+        return new RabbitAdmin(conn);
+    }
+
+    @Bean
+    public ApplicationListener<ApplicationReadyEvent> inicializaAdmin(RabbitAdmin rabbitAdmin) {
+        return event -> rabbitAdmin.initialize();
+    }
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
@@ -26,23 +37,71 @@ public class PedidoAMQPConfiguration {
     }
 
     @Bean
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+            ConnectionFactory connectionFactory,
+            Jackson2JsonMessageConverter messageConverter) {
+
+        SimpleRabbitListenerContainerFactory factory =
+                new SimpleRabbitListenerContainerFactory();
+
+        factory.setConnectionFactory(connectionFactory);
+        factory.setMessageConverter(messageConverter);
+
+        factory.setDefaultRequeueRejected(false);
+
+        return factory;
+    }
+
+    @Bean
     public Queue filaProdutosCriados() {
-        return QueueBuilder.nonDurable("produto.criado").build();
+        return QueueBuilder
+                .durable("produto.criado")
+                .withArgument("x-dead-letter-exchange", "produto.dlx")
+                .withArgument("x-dead-letter-routing-key", "produto.criado.dlq")
+                .build();
     }
 
     @Bean
     public Queue filaProdutosAtualizados() {
-        return QueueBuilder.nonDurable("produto.atualizado").build();
+        return QueueBuilder
+                .durable("produto.atualizado")
+                .withArgument("x-dead-letter-exchange", "produto.dlx")
+                .withArgument("x-dead-letter-routing-key", "produto.atualizado.dlq")
+                .build();
     }
 
     @Bean
     public Queue filaProdutosRemovidos() {
-        return QueueBuilder.nonDurable("produto.removido").build();
+        return QueueBuilder
+                .durable("produto.removido")
+                .withArgument("x-dead-letter-exchange", "produto.dlx")
+                .withArgument("x-dead-letter-routing-key", "produto.removido.dlq")
+                .build();
+    }
+
+    @Bean
+    public Queue filaProdutosCriadosDLQ() {
+        return QueueBuilder.durable("produto.criado.dlq").build();
+    }
+
+    @Bean
+    public Queue filaProdutosAtualizadosDLQ() {
+        return QueueBuilder.durable("produto.atualizado.dlq").build();
+    }
+
+    @Bean
+    public Queue filaProdutosRemovidosDLQ() {
+        return QueueBuilder.durable("produto.removido.dlq").build();
     }
 
     @Bean
     public TopicExchange topicExchange() {
         return ExchangeBuilder.topicExchange("produto.exchange").build();
+    }
+
+    @Bean
+    public DirectExchange deadLetterExchange() {
+        return ExchangeBuilder.directExchange("produto.dlx").build();
     }
 
     @Bean
@@ -70,12 +129,23 @@ public class PedidoAMQPConfiguration {
     }
 
     @Bean
-    public RabbitAdmin criaRabbitAdmin(ConnectionFactory conn) {
-        return new RabbitAdmin(conn);
+    public Binding bindDLQProdutosCriados(Queue filaProdutosCriadosDLQ, DirectExchange deadLetterExchange) {
+        return BindingBuilder.bind(filaProdutosCriadosDLQ)
+                .to(deadLetterExchange)
+                .with("produto.criado.dlq");
     }
 
     @Bean
-    public ApplicationListener<ApplicationReadyEvent> inicializaAdmin(RabbitAdmin rabbitAdmin) {
-        return event -> rabbitAdmin.initialize();
+    public Binding bindDLQProdutosAtualizados(Queue filaProdutosAtualizadosDLQ, DirectExchange deadLetterExchange) {
+        return BindingBuilder.bind(filaProdutosAtualizadosDLQ)
+                .to(deadLetterExchange)
+                .with("produto.atualizado.dlq");
+    }
+
+    @Bean
+    public Binding bindDLQProdutosRemovidos(Queue filaProdutosRemovidosDLQ, DirectExchange deadLetterExchange) {
+        return BindingBuilder.bind(filaProdutosRemovidosDLQ)
+                .to(deadLetterExchange)
+                .with("produto.removido.dlq");
     }
 }
