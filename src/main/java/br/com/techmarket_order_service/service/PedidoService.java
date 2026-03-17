@@ -26,13 +26,10 @@ public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
 
-    private final ItemPedidoRepository itemPedidoRepository;
-
     private final ProdutoSnapshotRepository produtoSnapshotRepository;
 
-    public PedidoService(PedidoRepository pedidoRepository, ItemPedidoRepository itemPedidoRepository, ProdutoSnapshotRepository produtoSnapshotRepository) {
+    public PedidoService(PedidoRepository pedidoRepository, ProdutoSnapshotRepository produtoSnapshotRepository) {
         this.pedidoRepository = pedidoRepository;
-        this.itemPedidoRepository = itemPedidoRepository;
         this.produtoSnapshotRepository = produtoSnapshotRepository;
     }
 
@@ -86,7 +83,7 @@ public class PedidoService {
 
     public PedidoResponseDTO atualizarStatus(Long id, PedidoStatusUpdateDTO dto) {
         Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Produto com id: " + id + " não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Pedido com id: " + id + " não encontrado"));
 
         pedido.setStatusPedido(dto.statusPedido());
 
