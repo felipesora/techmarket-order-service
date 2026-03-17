@@ -1,17 +1,14 @@
 package br.com.techmarket_order_service.service;
 
 import br.com.techmarket_order_service.dto.itemPedido.ItemPedidoCreateDTO;
-import br.com.techmarket_order_service.dto.itemPedido.ItemPedidoResponseDTO;
-import br.com.techmarket_order_service.dto.itemPedido.ProdutoPedidoResponseDTO;
 import br.com.techmarket_order_service.dto.pedido.PedidoCreateDTO;
 import br.com.techmarket_order_service.dto.pedido.PedidoResponseDTO;
-import br.com.techmarket_order_service.dto.produtoSnapshot.ProdutoSnapshotResponseDTO;
+import br.com.techmarket_order_service.dto.pedido.PedidoStatusUpdateDTO;
 import br.com.techmarket_order_service.mapper.ItemPedidoMapper;
 import br.com.techmarket_order_service.mapper.PedidoMapper;
 import br.com.techmarket_order_service.model.ItemPedido;
 import br.com.techmarket_order_service.model.Pedido;
 import br.com.techmarket_order_service.model.ProdutoSnapshot;
-import br.com.techmarket_order_service.model.enums.StatusPedido;
 import br.com.techmarket_order_service.repository.ItemPedidoRepository;
 import br.com.techmarket_order_service.repository.PedidoRepository;
 import br.com.techmarket_order_service.repository.ProdutoSnapshotRepository;
@@ -20,9 +17,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +40,18 @@ public class PedidoService {
         return pedidoRepository
                 .findAll(paginacao)
                 .map(PedidoMapper::toResponseDTO);
+    }
+
+    public PedidoResponseDTO buscarPedidoPorId(Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Pedido não encontrado"));
+
+        return PedidoMapper.toResponseDTO(pedido);
+    }
+
+    public Page<PedidoResponseDTO> buscarPorUsuario(Long usuarioId, Pageable paginacao) {
+        Page<Pedido> pedidos = pedidoRepository.findByIdUsuario(usuarioId, paginacao);
+        return pedidos.map(PedidoMapper::toResponseDTO);
     }
 
     @Transactional
@@ -75,5 +82,16 @@ public class PedidoService {
         var salvo = pedidoRepository.save(pedido);
 
         return PedidoMapper.toResponseDTO(salvo);
+    }
+
+    public PedidoResponseDTO atualizarStatus(Long id, PedidoStatusUpdateDTO dto) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Produto com id: " + id + " não encontrado"));
+
+        pedido.setStatusPedido(dto.statusPedido());
+
+        pedidoRepository.save(pedido);
+
+        return PedidoMapper.toResponseDTO(pedido);
     }
 }
