@@ -75,8 +75,7 @@ public class ProdutoSnapshotService {
 
     private ProdutoSnapshot buscarPorIdMongo(String idMongo) {
         return produtoSnapshotRepository.findByIdMongo(idMongo)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Produto com idMongo: " + idMongo + " não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Produto com idMongo: " + idMongo + " não encontrado"));
     }
 
     private ProdutoSnapshotResponseDTO converterParaResponseDTO(ProdutoSnapshot produto) {
