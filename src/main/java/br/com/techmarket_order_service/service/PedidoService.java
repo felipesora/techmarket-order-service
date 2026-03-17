@@ -41,7 +41,7 @@ public class PedidoService {
 
     public PedidoResponseDTO buscarPedidoPorId(Long id) {
         Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Pedido não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Pedido com id: " + id + " não encontrado"));
 
         return PedidoMapper.toResponseDTO(pedido);
     }

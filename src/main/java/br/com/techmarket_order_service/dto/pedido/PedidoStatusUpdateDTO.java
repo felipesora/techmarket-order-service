@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 
 public record PedidoStatusUpdateDTO(
-        @NotNull
+        @NotNull(message = "O status do pedido é obrigatório")
         @JsonProperty("status_pedido")
         StatusPedido statusPedido
 ) {
