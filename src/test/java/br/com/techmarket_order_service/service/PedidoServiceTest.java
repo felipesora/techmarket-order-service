@@ -176,7 +176,7 @@ class PedidoServiceTest {
                     () -> pedidoService.buscarPedidoPorId(idInexistente)
             );
 
-            assertEquals("Pedido não encontrado", exception.getMessage());
+            assertEquals("Pedido com id: 999 não encontrado", exception.getMessage());
             verify(pedidoRepository, times(1)).findById(idInexistente);
         }
     }
