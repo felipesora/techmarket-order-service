@@ -12,6 +12,7 @@ import br.com.techmarket_order_service.mapper.PedidoMapper;
 import br.com.techmarket_order_service.model.ItemPedido;
 import br.com.techmarket_order_service.model.Pedido;
 import br.com.techmarket_order_service.model.ProdutoSnapshot;
+import br.com.techmarket_order_service.model.enums.StatusPedido;
 import br.com.techmarket_order_service.repository.PedidoRepository;
 import br.com.techmarket_order_service.repository.ProdutoSnapshotRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -104,13 +105,59 @@ public class PedidoService {
         return PedidoMapper.toResponseDTO(salvo);
     }
 
+    @Transactional
     public PedidoResponseDTO atualizarStatus(Long id, PedidoStatusUpdateDTO dto) {
+
+        if (dto.statusPedido().name().equals("CANCELADO")) {
+            throw new RegraNegocioException("Use o endpoint específico para cancelamento de pedido");
+        }
+
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Pedido com id: " + id + " não encontrado"));
+
+        if (pedido.getStatusPedido() == StatusPedido.CANCELADO) {
+            throw new RegraNegocioException("Pedido já cancelado não pode ter o status alterado");
+        }
 
         pedido.setStatusPedido(dto.statusPedido());
 
         pedidoRepository.save(pedido);
+
+        return PedidoMapper.toResponseDTO(pedido);
+    }
+
+    @Transactional
+    public PedidoResponseDTO cancelarPedido(Long id) {
+
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Pedido com id: " + id + " não encontrado"));
+
+        if (pedido.getStatusPedido() == StatusPedido.ENTREGUE) {
+            throw new RegraNegocioException("Pedido finalizado não pode ser cancelado");
+        }
+
+        if (pedido.getStatusPedido() == StatusPedido.CANCELADO) {
+            throw new RegraNegocioException("Pedido já está cancelado");
+        }
+
+        pedido.setStatusPedido(StatusPedido.CANCELADO);
+
+        var salvo = pedidoRepository.save(pedido);
+
+        List<ItemPedidoEventDTO> itensEvento = salvo.getItens().stream()
+                .map(item -> new ItemPedidoEventDTO(
+                        item.getProduto().getIdMongo(),
+                        item.getQuantidade()
+                ))
+                .toList();
+
+        PedidoCriadoEventDTO evento = new PedidoCriadoEventDTO(
+                salvo.getId(),
+                itensEvento
+        );
+
+        System.out.println("Enviando pedido cancelado: " + evento);
+        rabbitTemplate.convertAndSend("pedido.exchange", "pedido.cancelado", evento);
 
         return PedidoMapper.toResponseDTO(pedido);
     }

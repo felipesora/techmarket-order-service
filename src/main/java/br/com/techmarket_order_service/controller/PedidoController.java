@@ -55,4 +55,10 @@ public class PedidoController {
         PedidoResponseDTO pedido = pedidoService.atualizarStatus(id, dto);
         return ResponseEntity.ok(pedido);
     }
+
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<PedidoResponseDTO> cancelarPedido(@PathVariable Long id) {
+        PedidoResponseDTO pedido = pedidoService.cancelarPedido(id);
+        return ResponseEntity.ok(pedido);
+    }
 }
