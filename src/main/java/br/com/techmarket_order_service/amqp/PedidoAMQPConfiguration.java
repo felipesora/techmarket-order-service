@@ -36,10 +36,20 @@ public class PedidoAMQPConfiguration {
         return rabbitTemplate;
     }
 
+    // Config Producer
     @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-            ConnectionFactory connectionFactory,
-            Jackson2JsonMessageConverter messageConverter) {
+    public TopicExchange pedidoTopicExchange() {
+        return new TopicExchange("pedido.exchange");
+    }
+
+    @Bean
+    public DirectExchange pedidoDeadLetterExchange() {
+        return new DirectExchange("pedido.dlx");
+    }
+
+    // Config Consumer
+    @Bean
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory, Jackson2JsonMessageConverter messageConverter) {
 
         SimpleRabbitListenerContainerFactory factory =
                 new SimpleRabbitListenerContainerFactory();
@@ -95,57 +105,57 @@ public class PedidoAMQPConfiguration {
     }
 
     @Bean
-    public TopicExchange topicExchange() {
+    public TopicExchange produtoTopicExchange() {
         return ExchangeBuilder.topicExchange("produto.exchange").build();
     }
 
     @Bean
-    public DirectExchange deadLetterExchange() {
+    public DirectExchange produtoDeadLetterExchange() {
         return ExchangeBuilder.directExchange("produto.dlx").build();
     }
 
     @Bean
-    public Binding bindProdutosCriados(Queue filaProdutosCriados, TopicExchange topicExchange) {
+    public Binding bindProdutosCriados(Queue filaProdutosCriados, TopicExchange produtoTopicExchange) {
         return BindingBuilder
                 .bind(filaProdutosCriados)
-                .to(topicExchange)
+                .to(produtoTopicExchange)
                 .with("produto.criado");
     }
 
     @Bean
-    public Binding bindProdutosAtualizados(Queue filaProdutosAtualizados, TopicExchange topicExchange) {
+    public Binding bindProdutosAtualizados(Queue filaProdutosAtualizados, TopicExchange produtoTopicExchange) {
         return BindingBuilder
                 .bind(filaProdutosAtualizados)
-                .to(topicExchange)
+                .to(produtoTopicExchange)
                 .with("produto.atualizado");
     }
 
     @Bean
-    public Binding bindProdutosRemovidos(Queue filaProdutosRemovidos, TopicExchange topicExchange) {
+    public Binding bindProdutosRemovidos(Queue filaProdutosRemovidos, TopicExchange produtoTopicExchange) {
         return BindingBuilder
                 .bind(filaProdutosRemovidos)
-                .to(topicExchange)
+                .to(produtoTopicExchange)
                 .with("produto.removido");
     }
 
     @Bean
-    public Binding bindDLQProdutosCriados(Queue filaProdutosCriadosDLQ, DirectExchange deadLetterExchange) {
+    public Binding bindDLQProdutosCriados(Queue filaProdutosCriadosDLQ, DirectExchange produtoDeadLetterExchange) {
         return BindingBuilder.bind(filaProdutosCriadosDLQ)
-                .to(deadLetterExchange)
+                .to(produtoDeadLetterExchange)
                 .with("produto.criado.dlq");
     }
 
     @Bean
-    public Binding bindDLQProdutosAtualizados(Queue filaProdutosAtualizadosDLQ, DirectExchange deadLetterExchange) {
+    public Binding bindDLQProdutosAtualizados(Queue filaProdutosAtualizadosDLQ, DirectExchange produtoDeadLetterExchange) {
         return BindingBuilder.bind(filaProdutosAtualizadosDLQ)
-                .to(deadLetterExchange)
+                .to(produtoDeadLetterExchange)
                 .with("produto.atualizado.dlq");
     }
 
     @Bean
-    public Binding bindDLQProdutosRemovidos(Queue filaProdutosRemovidosDLQ, DirectExchange deadLetterExchange) {
+    public Binding bindDLQProdutosRemovidos(Queue filaProdutosRemovidosDLQ, DirectExchange produtoDeadLetterExchange) {
         return BindingBuilder.bind(filaProdutosRemovidosDLQ)
-                .to(deadLetterExchange)
+                .to(produtoDeadLetterExchange)
                 .with("produto.removido.dlq");
     }
 }
