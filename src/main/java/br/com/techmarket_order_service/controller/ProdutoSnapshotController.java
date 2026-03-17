@@ -23,7 +23,7 @@ public class ProdutoSnapshotController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProdutoSnapshotResponseDTO>> listarTodosUsuarios(@PageableDefault(size = 10) Pageable paginacao) {
+    public ResponseEntity<Page<ProdutoSnapshotResponseDTO>> listarTodosProdutos(@PageableDefault(size = 10) Pageable paginacao) {
         Page<ProdutoSnapshotResponseDTO> produtos = produtoSnapshotService.obterTodosProdutos(paginacao);
         return ResponseEntity.ok(produtos);
     }
