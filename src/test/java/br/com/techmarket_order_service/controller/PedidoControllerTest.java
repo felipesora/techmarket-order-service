@@ -97,7 +97,7 @@ class PedidoControllerTest {
                 VALOR_TOTAL,
                 DATA_CRIACAO,
                 MetodoPagamento.CARTAO_CREDITO,
-                StatusPedido.CRIADO,
+                StatusPedido.AGUARDANDO_PAGAMENTO,
                 List.of(itemPedidoResponseDTO)
         );
 
@@ -137,7 +137,7 @@ class PedidoControllerTest {
                     .andExpect(jsonPath("$.content[0].id_usuario", is(USUARIO_ID.intValue())))
                     .andExpect(jsonPath("$.content[0].valor_total", is(VALOR_TOTAL.doubleValue())))
                     .andExpect(jsonPath("$.content[0].metodo_pagamento", is(MetodoPagamento.CARTAO_CREDITO.toString())))
-                    .andExpect(jsonPath("$.content[0].status_pedido", is(StatusPedido.CRIADO.toString())))
+                    .andExpect(jsonPath("$.content[0].status_pedido", is(StatusPedido.AGUARDANDO_PAGAMENTO.toString())))
                     .andExpect(jsonPath("$.content[0].itens", hasSize(1)))
                     .andExpect(jsonPath("$.content[0].itens[0].id_item_pedido", is(ITEM_ID.intValue())))
                     .andExpect(jsonPath("$.content[0].itens[0].quantidade", is(QUANTIDADE)))
@@ -201,7 +201,7 @@ class PedidoControllerTest {
                     .andExpect(jsonPath("$.id_usuario", is(USUARIO_ID.intValue())))
                     .andExpect(jsonPath("$.valor_total", is(VALOR_TOTAL.doubleValue())))
                     .andExpect(jsonPath("$.metodo_pagamento", is(MetodoPagamento.CARTAO_CREDITO.toString())))
-                    .andExpect(jsonPath("$.status_pedido", is(StatusPedido.CRIADO.toString())))
+                    .andExpect(jsonPath("$.status_pedido", is(StatusPedido.AGUARDANDO_PAGAMENTO.toString())))
                     .andExpect(jsonPath("$.itens", hasSize(1)));
 
             verify(pedidoService, times(1)).buscarPedidoPorId(PEDIDO_ID);
@@ -273,7 +273,7 @@ class PedidoControllerTest {
                     .andExpect(header().string("Location", containsString("/pedidos/" + PEDIDO_ID)))
                     .andExpect(jsonPath("$.id_pedido", is(PEDIDO_ID.intValue())))
                     .andExpect(jsonPath("$.id_usuario", is(USUARIO_ID.intValue())))
-                    .andExpect(jsonPath("$.status_pedido", is(StatusPedido.CRIADO.toString())));
+                    .andExpect(jsonPath("$.status_pedido", is(StatusPedido.AGUARDANDO_PAGAMENTO.toString())));
 
             verify(pedidoService, times(1)).cadastrarPedido(any(PedidoCreateDTO.class));
         }

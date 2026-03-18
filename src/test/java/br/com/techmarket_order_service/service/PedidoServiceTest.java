@@ -124,7 +124,7 @@ class PedidoServiceTest {
     void deveAtualizarStatusComSucesso() {
         Pedido pedido = new Pedido();
         pedido.setId(1L);
-        pedido.setStatusPedido(StatusPedido.CRIADO);
+        pedido.setStatusPedido(StatusPedido.AGUARDANDO_PAGAMENTO);
         pedido.setItens(new ArrayList<>());
 
         when(pedidoRepository.findById(1L))
@@ -151,7 +151,7 @@ class PedidoServiceTest {
     void deveCancelarPedidoComSucesso() {
         Pedido pedido = new Pedido();
         pedido.setId(1L);
-        pedido.setStatusPedido(StatusPedido.CRIADO);
+        pedido.setStatusPedido(StatusPedido.AGUARDANDO_PAGAMENTO);
         pedido.setItens(new ArrayList<>());
 
 
