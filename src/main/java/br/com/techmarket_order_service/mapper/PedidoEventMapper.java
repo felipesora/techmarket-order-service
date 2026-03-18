@@ -22,6 +22,8 @@ public final class PedidoEventMapper {
 
         return new PedidoCriadoEventDTO(
                 pedido.getId(),
+                pedido.getValorTotal(),
+                pedido.getMetodoPagamento(),
                 itensEvento
         );
     }
@@ -37,6 +39,8 @@ public final class PedidoEventMapper {
 
         return new PedidoCanceladoEventDTO(
                 pedido.getId(),
+                pedido.getValorTotal(),
+                pedido.getMetodoPagamento(),
                 itensEvento
         );
     }
