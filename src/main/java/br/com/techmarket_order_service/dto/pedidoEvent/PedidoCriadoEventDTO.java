@@ -1,6 +1,4 @@
-package br.com.techmarket_order_service.dto.pedido;
-
-import br.com.techmarket_order_service.dto.itemPedido.ItemPedidoEventDTO;
+package br.com.techmarket_order_service.dto.pedidoEvent;
 
 import java.util.List;
 
