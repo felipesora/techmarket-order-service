@@ -36,7 +36,9 @@ public class PedidoAMQPConfiguration {
         return rabbitTemplate;
     }
 
-    // Config Producer
+    /*
+     * Config Producer
+     */
     @Bean
     public TopicExchange pedidoTopicExchange() {
         return new TopicExchange("pedido.exchange");
@@ -47,7 +49,9 @@ public class PedidoAMQPConfiguration {
         return new DirectExchange("pedido.dlx");
     }
 
-    // Config Consumer
+    /*
+    * Config Consumer
+    */
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory, Jackson2JsonMessageConverter messageConverter) {
 
@@ -62,6 +66,7 @@ public class PedidoAMQPConfiguration {
         return factory;
     }
 
+    // Consumindo produtos
     @Bean
     public Queue filaProdutosCriados() {
         return QueueBuilder
@@ -157,5 +162,45 @@ public class PedidoAMQPConfiguration {
         return BindingBuilder.bind(filaProdutosRemovidosDLQ)
                 .to(produtoDeadLetterExchange)
                 .with("produto.removido.dlq");
+    }
+
+    // Consumindo pagamentos
+    @Bean
+    public Queue filaPagamentosConfirmardos() {
+        return QueueBuilder
+                .durable("pagamento.confirmado.fila")
+                .withArgument("x-dead-letter-exchange", "pagamento.dlx")
+                .withArgument("x-dead-letter-routing-key", "pagamento.confirmado.dlq")
+                .build();
+    }
+
+    @Bean
+    public Queue filaPagamentosConfirmardosDLQ() {
+        return QueueBuilder.durable("pagamento.confirmado.fila.dlq").build();
+    }
+
+    @Bean
+    public TopicExchange pagamentoTopicExchange() {
+        return ExchangeBuilder.topicExchange("pagamento.exchange").build();
+    }
+
+    @Bean
+    public DirectExchange pagamentoDeadLetterExchange() {
+        return ExchangeBuilder.directExchange("pagamento.dlx").build();
+    }
+
+    @Bean
+    public Binding bindPagamentosConfirmardos(Queue filaPagamentosConfirmardos, TopicExchange pagamentoTopicExchange) {
+        return BindingBuilder
+                .bind(filaPagamentosConfirmardos)
+                .to(pagamentoTopicExchange)
+                .with("pagamento.confirmado");
+    }
+
+    @Bean
+    public Binding bindDLQPagamentosConfirmardos(Queue filaPagamentosConfirmardosDLQ, DirectExchange pagamentoDeadLetterExchange) {
+        return BindingBuilder.bind(filaPagamentosConfirmardosDLQ)
+                .to(pagamentoDeadLetterExchange)
+                .with("pagamento.confirmado.dlq");
     }
 }

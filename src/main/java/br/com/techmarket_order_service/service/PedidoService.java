@@ -143,6 +143,19 @@ public class PedidoService {
         return PedidoMapper.toResponseDTO(pedido);
     }
 
+    @Transactional
+    public void confirmarPagamento(Long idPedido) {
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new EntityNotFoundException("Pedido com id: " + idPedido + " não encontrado"));
+
+        if (pedido.getStatusPedido().name().equals("CANCELADO")) {
+            throw new RegraNegocioException("Pedido já cancelado não pode ter o status alterado");
+        }
+
+        pedido.setStatusPedido(StatusPedido.PAGAMENTO_APROVADO);
+        pedidoRepository.save(pedido);
+    }
+
     private void validarProduto(ProdutoSnapshot produto, ItemPedidoCreateDTO itemDTO) {
 
         if (!produto.getStatus().name().equals("ATIVO")) {
