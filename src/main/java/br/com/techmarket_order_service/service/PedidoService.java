@@ -1,13 +1,14 @@
 package br.com.techmarket_order_service.service;
 
 import br.com.techmarket_order_service.dto.itemPedido.ItemPedidoCreateDTO;
-import br.com.techmarket_order_service.dto.itemPedido.ItemPedidoEventDTO;
 import br.com.techmarket_order_service.dto.pedido.PedidoCreateDTO;
-import br.com.techmarket_order_service.dto.pedido.PedidoCriadoEventDTO;
+import br.com.techmarket_order_service.dto.pedidoEvent.PedidoCanceladoEventDTO;
+import br.com.techmarket_order_service.dto.pedidoEvent.PedidoCriadoEventDTO;
 import br.com.techmarket_order_service.dto.pedido.PedidoResponseDTO;
 import br.com.techmarket_order_service.dto.pedido.PedidoStatusUpdateDTO;
 import br.com.techmarket_order_service.exception.RegraNegocioException;
 import br.com.techmarket_order_service.mapper.ItemPedidoMapper;
+import br.com.techmarket_order_service.mapper.PedidoEventMapper;
 import br.com.techmarket_order_service.mapper.PedidoMapper;
 import br.com.techmarket_order_service.model.ItemPedido;
 import br.com.techmarket_order_service.model.Pedido;
@@ -87,17 +88,7 @@ public class PedidoService {
 
         var salvo = pedidoRepository.save(pedido);
 
-        List<ItemPedidoEventDTO> itensEvento = salvo.getItens().stream()
-                .map(item -> new ItemPedidoEventDTO(
-                        item.getProduto().getIdMongo(),
-                        item.getQuantidade()
-                ))
-                .toList();
-
-        PedidoCriadoEventDTO evento = new PedidoCriadoEventDTO(
-                salvo.getId(),
-                itensEvento
-        );
+        PedidoCriadoEventDTO evento = PedidoEventMapper.toPedidoCriadoEvent(salvo);
 
         System.out.println("Enviando pedido cadastrado: " + evento);
         rabbitTemplate.convertAndSend("pedido.exchange", "pedido.criado", evento);
@@ -144,17 +135,7 @@ public class PedidoService {
 
         var salvo = pedidoRepository.save(pedido);
 
-        List<ItemPedidoEventDTO> itensEvento = salvo.getItens().stream()
-                .map(item -> new ItemPedidoEventDTO(
-                        item.getProduto().getIdMongo(),
-                        item.getQuantidade()
-                ))
-                .toList();
-
-        PedidoCriadoEventDTO evento = new PedidoCriadoEventDTO(
-                salvo.getId(),
-                itensEvento
-        );
+        PedidoCanceladoEventDTO evento = PedidoEventMapper.toPedidoCanceladoEvent(salvo);
 
         System.out.println("Enviando pedido cancelado: " + evento);
         rabbitTemplate.convertAndSend("pedido.exchange", "pedido.cancelado", evento);
