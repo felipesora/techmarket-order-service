@@ -17,7 +17,7 @@ public final class PedidoMapper {
 
         pedido.setIdUsuario(dto.idUsuario());
         pedido.setMetodoPagamento(dto.metodoPagamento());
-        pedido.setStatusPedido(StatusPedido.CRIADO);
+        pedido.setStatusPedido(StatusPedido.AGUARDANDO_PAGAMENTO);
         pedido.setDataCriacao(LocalDateTime.now());
 
         return pedido;
