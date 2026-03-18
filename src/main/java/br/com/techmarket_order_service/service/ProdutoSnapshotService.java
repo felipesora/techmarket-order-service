@@ -2,6 +2,7 @@ package br.com.techmarket_order_service.service;
 
 import br.com.techmarket_order_service.dto.produtoSnapshot.ProdutoSnapshotEventDTO;
 import br.com.techmarket_order_service.dto.produtoSnapshot.ProdutoSnapshotResponseDTO;
+import br.com.techmarket_order_service.mapper.ProdutoSnapshotMapper;
 import br.com.techmarket_order_service.model.ProdutoSnapshot;
 import br.com.techmarket_order_service.model.enums.StatusProduto;
 import br.com.techmarket_order_service.repository.ProdutoSnapshotRepository;
@@ -23,49 +24,37 @@ public class ProdutoSnapshotService {
     public Page<ProdutoSnapshotResponseDTO> obterTodosProdutos(Pageable paginacao) {
         return produtoSnapshotRepository
                 .findAll(paginacao)
-                .map(this::converterParaResponseDTO);
+                .map(ProdutoSnapshotMapper::toResponseDTO);
     }
 
     public ProdutoSnapshotResponseDTO obterProdutoPorId(Long id) {
         ProdutoSnapshot produto = buscarEntidadeProdutoPorId(id);
-        return converterParaResponseDTO(produto);
+        return ProdutoSnapshotMapper.toResponseDTO(produto);
     }
 
     @Transactional
     public ProdutoSnapshotResponseDTO cadastrarProduto(ProdutoSnapshotEventDTO dto) {
         ProdutoSnapshot produto = new ProdutoSnapshot();
-        produto.setIdMongo(dto.idMongo());
-        produto.setCodigo(dto.codigo());
-        produto.setNome(dto.nome());
-        produto.setPrecoUnitario(dto.precoUnitario());
-        produto.setEstoque(dto.estoque());
-        produto.setStatus(StatusProduto.ATIVO);
+        ProdutoSnapshotMapper.toEntity(dto, produto);
+        produtoSnapshotRepository.save(produto);
 
-        produto = produtoSnapshotRepository.save(produto);
-
-        return converterParaResponseDTO(produto);
+        return ProdutoSnapshotMapper.toResponseDTO(produto);
     }
 
     @Transactional
     public ProdutoSnapshotResponseDTO atualizarProduto(ProdutoSnapshotEventDTO dto) {
         ProdutoSnapshot produto = buscarPorIdMongo(dto.idMongo());
+        ProdutoSnapshotMapper.toEntity(dto, produto);
+        produtoSnapshotRepository.save(produto);
 
-        produto.setCodigo(dto.codigo());
-        produto.setNome(dto.nome());
-        produto.setPrecoUnitario(dto.precoUnitario());
-        produto.setEstoque(dto.estoque());
-        produto.setStatus(dto.status());
-
-        produto = produtoSnapshotRepository.save(produto);
-
-        return converterParaResponseDTO(produto);
+        return ProdutoSnapshotMapper.toResponseDTO(produto);
     }
 
     @Transactional
     public ProdutoSnapshotResponseDTO deletarProduto(ProdutoSnapshotEventDTO dto) {
         var produto = buscarPorIdMongo(dto.idMongo());
         produtoSnapshotRepository.delete(produto);
-        return converterParaResponseDTO(produto);
+        return ProdutoSnapshotMapper.toResponseDTO(produto);
     }
 
     private ProdutoSnapshot buscarEntidadeProdutoPorId(Long id) {
@@ -76,17 +65,5 @@ public class ProdutoSnapshotService {
     private ProdutoSnapshot buscarPorIdMongo(String idMongo) {
         return produtoSnapshotRepository.findByIdMongo(idMongo)
                 .orElseThrow(() -> new EntityNotFoundException("Produto com idMongo: " + idMongo + " não encontrado"));
-    }
-
-    private ProdutoSnapshotResponseDTO converterParaResponseDTO(ProdutoSnapshot produto) {
-        return new ProdutoSnapshotResponseDTO(
-                produto.getId(),
-                produto.getIdMongo(),
-                produto.getCodigo(),
-                produto.getNome(),
-                produto.getPrecoUnitario(),
-                produto.getEstoque(),
-                produto.getStatus()
-        );
     }
 }
