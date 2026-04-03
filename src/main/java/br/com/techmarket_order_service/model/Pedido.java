@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Entity
@@ -33,7 +34,7 @@ public class Pedido {
     private BigDecimal valorTotal;
 
     @Column(nullable = false, name = "data_criacao")
-    private LocalDateTime dataCriacao;
+    private OffsetDateTime dataCriacao;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "metodo_pagamento")
