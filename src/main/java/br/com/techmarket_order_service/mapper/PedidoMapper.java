@@ -6,6 +6,8 @@ import br.com.techmarket_order_service.model.Pedido;
 import br.com.techmarket_order_service.model.enums.StatusPedido;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 public final class PedidoMapper {
 
@@ -18,7 +20,7 @@ public final class PedidoMapper {
         pedido.setIdUsuario(dto.idUsuario());
         pedido.setMetodoPagamento(dto.metodoPagamento());
         pedido.setStatusPedido(StatusPedido.AGUARDANDO_PAGAMENTO);
-        pedido.setDataCriacao(LocalDateTime.now());
+        pedido.setDataCriacao(OffsetDateTime.now(ZoneOffset.UTC));
 
         return pedido;
     }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public record PedidoResponseDTO(
@@ -17,7 +18,7 @@ public record PedidoResponseDTO(
         @JsonProperty("valor_total")
         BigDecimal valorTotal,
         @JsonProperty("data_criacao")
-        LocalDateTime dataCriacao,
+        OffsetDateTime dataCriacao,
         @JsonProperty("metodo_pagamento")
         MetodoPagamento metodoPagamento,
         @JsonProperty("status_pedido")
