@@ -27,6 +27,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -69,7 +71,7 @@ class PedidoControllerTest {
     private final Integer QUANTIDADE = 2;
     private final BigDecimal PRECO_UNITARIO = new BigDecimal("100.00");
     private final BigDecimal SUBTOTAL = new BigDecimal("200.00");
-    private final LocalDateTime DATA_CRIACAO = LocalDateTime.now();
+    private final OffsetDateTime DATA_CRIACAO = OffsetDateTime.now(ZoneOffset.UTC);
 
     @BeforeEach
     void setUp() {
