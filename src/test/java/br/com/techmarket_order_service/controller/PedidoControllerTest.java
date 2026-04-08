@@ -83,7 +83,8 @@ class PedidoControllerTest {
                 1L,
                 ID_MONGO_PRODUTO,
                 PRODUTO_CODIGO,
-                PRODUTO_NOME
+                PRODUTO_NOME,
+                PRECO_UNITARIO
         );
 
         itemPedidoResponseDTO = new ItemPedidoResponseDTO(

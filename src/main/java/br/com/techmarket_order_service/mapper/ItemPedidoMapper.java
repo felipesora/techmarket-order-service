@@ -40,7 +40,8 @@ public final class ItemPedidoMapper {
                         item.getProduto().getId(),
                         item.getProduto().getIdMongo(),
                         item.getProduto().getCodigo(),
-                        item.getProduto().getNome()
+                        item.getProduto().getNome(),
+                        item.getProduto().getPrecoUnitario()
                 )
         );
     }
