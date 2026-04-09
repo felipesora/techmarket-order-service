@@ -7,6 +7,7 @@ import br.com.techmarket_order_service.service.PedidoService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,9 @@ public class PedidoController {
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<Page<PedidoResponseDTO>> buscarPedidosPorUsuario(@PathVariable Long usuarioId, @PageableDefault(size = 10) Pageable paginacao) {
+    public ResponseEntity<Page<PedidoResponseDTO>> buscarPedidosPorUsuario(
+            @PathVariable Long usuarioId,
+            @PageableDefault(size = 10, sort = "dataCriacao", direction = Sort.Direction.DESC) Pageable paginacao) {
         Page<PedidoResponseDTO> pedidos = pedidoService.buscarPorUsuario(usuarioId, paginacao);
         return ResponseEntity.ok(pedidos);
     }
