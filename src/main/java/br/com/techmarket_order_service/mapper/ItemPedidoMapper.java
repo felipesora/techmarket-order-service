@@ -15,22 +15,26 @@ public final class ItemPedidoMapper {
 
     public static ItemPedido toEntity(ItemPedidoCreateDTO dto, Pedido pedido, ProdutoSnapshot produto) {
 
-        BigDecimal precoUnitario = produto.getPrecoUnitario();
+        BigDecimal precoDoProduto = getPrecoDoProduto(produto);
 
         BigDecimal subtotal =
-                precoUnitario.multiply(BigDecimal.valueOf(dto.quantidade()));
+                precoDoProduto.multiply(BigDecimal.valueOf(dto.quantidade()));
 
         ItemPedido item = new ItemPedido();
         item.setPedido(pedido);
         item.setProduto(produto);
         item.setQuantidade(dto.quantidade());
-        item.setPrecoUnitario(precoUnitario);
+        item.setPrecoUnitario(precoDoProduto);
         item.setSubtotal(subtotal);
 
         return item;
     }
 
     public static ItemPedidoResponseDTO toResponseDTO(ItemPedido item) {
+
+        BigDecimal precoUnitario = item.getProduto().getPrecoUnitario();
+        BigDecimal precoPromocional = item.getProduto().getPrecoPromocional();
+        var precoProduto = precoPromocional != null ? precoPromocional : precoUnitario;
 
         return new ItemPedidoResponseDTO(
                 item.getId(),
@@ -41,8 +45,14 @@ public final class ItemPedidoMapper {
                         item.getProduto().getIdMongo(),
                         item.getProduto().getCodigo(),
                         item.getProduto().getNome(),
-                        item.getProduto().getPrecoUnitario()
+                        precoProduto
                 )
         );
+    }
+
+    private static BigDecimal getPrecoDoProduto(ProdutoSnapshot produto) {
+        BigDecimal precoUnitario = produto.getPrecoUnitario();
+        BigDecimal precoPromocional = produto.getPrecoPromocional();
+        return precoPromocional != null ? precoPromocional : precoUnitario;
     }
 }

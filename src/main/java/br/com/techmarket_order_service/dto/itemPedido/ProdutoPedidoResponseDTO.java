@@ -11,7 +11,7 @@ public record ProdutoPedidoResponseDTO(
         String idMongo,
         String codigo,
         String nome,
-        @JsonProperty("preco_unitario")
-        BigDecimal precoUnitario
+        @JsonProperty("preco_produto")
+        BigDecimal precoProduto
 ) {
 }
