@@ -23,6 +23,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +60,18 @@ public class PedidoService {
     public Page<PedidoResponseDTO> buscarPorUsuario(Long usuarioId, Pageable paginacao) {
         Page<Pedido> pedidos = pedidoRepository.findByIdUsuario(usuarioId, paginacao);
         return pedidos.map(PedidoMapper::toResponseDTO);
+    }
+
+    public Long contarPedidosDeHoje() {
+        ZoneId zone = ZoneId.of("America/Sao_Paulo");
+
+        OffsetDateTime inicioDoDia = LocalDate.now(zone)
+                .atStartOfDay(zone)
+                .toOffsetDateTime();
+
+        OffsetDateTime fimDoDia = inicioDoDia.plusDays(1);
+
+        return pedidoRepository.contarPedidosDeHoje(inicioDoDia, fimDoDia);
     }
 
     @Transactional

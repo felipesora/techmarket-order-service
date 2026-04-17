@@ -26,7 +26,7 @@ public class PedidoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<PedidoResponseDTO>> listarTodosPedidos(@PageableDefault(size = 10) Pageable paginacao) {
+    public ResponseEntity<Page<PedidoResponseDTO>> listarTodosPedidos(@PageableDefault(size = 10, sort = "dataCriacao", direction = Sort.Direction.DESC) Pageable paginacao) {
         Page<PedidoResponseDTO> pedidos = pedidoService.obterTodosPedidos(paginacao);
         return ResponseEntity.ok(pedidos);
     }
@@ -43,6 +43,12 @@ public class PedidoController {
             @PageableDefault(size = 10, sort = "dataCriacao", direction = Sort.Direction.DESC) Pageable paginacao) {
         Page<PedidoResponseDTO> pedidos = pedidoService.buscarPorUsuario(usuarioId, paginacao);
         return ResponseEntity.ok(pedidos);
+    }
+
+    @GetMapping("/hoje/quantidade")
+    public ResponseEntity<Long> quantidadePedidosHoje() {
+        Long quantidade = pedidoService.contarPedidosDeHoje();
+        return ResponseEntity.ok(quantidade);
     }
 
     @PostMapping
