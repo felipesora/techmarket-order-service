@@ -19,10 +19,14 @@ public record ProdutoSnapshotEventDTO(
         @Size(min = 3, max = 150, message = "O nome deve ter entre 3 e 150 caracteres")
         String nome,
 
-        @NotNull(message = "O preço é obrigatório")
-        @Positive(message = "O preço deve ser maior que zero")
+        @NotNull(message = "O preço unitário é obrigatório")
+        @Positive(message = "O preço unitário deve ser maior que zero")
         @JsonProperty("preco_unitario")
         BigDecimal precoUnitario,
+
+        @Positive(message = "O preço promocional deve ser maior que zero")
+        @JsonProperty("preco_promocional")
+        BigDecimal precoPromocional,
 
         @NotNull(message = "O estoque é obrigatório")
         @PositiveOrZero(message = "O estoque não pode ser negativo")

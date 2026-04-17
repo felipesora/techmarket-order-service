@@ -15,6 +15,7 @@ public final class ProdutoSnapshotMapper {
         produto.setCodigo(dto.codigo());
         produto.setNome(dto.nome());
         produto.setPrecoUnitario(dto.precoUnitario());
+        produto.setPrecoPromocional(dto.precoPromocional());
         produto.setEstoque(dto.estoque());
         produto.setStatus(dto.status());;
 
@@ -28,6 +29,7 @@ public final class ProdutoSnapshotMapper {
                 produto.getCodigo(),
                 produto.getNome(),
                 produto.getPrecoUnitario(),
+                produto.getPrecoPromocional(),
                 produto.getEstoque(),
                 produto.getStatus()
         );

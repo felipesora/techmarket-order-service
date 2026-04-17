@@ -35,6 +35,9 @@ public class ProdutoSnapshot {
     @Column(name = "preco_unitario", nullable = false)
     private BigDecimal precoUnitario;
 
+    @Column(name = "preco_promocional")
+    private BigDecimal precoPromocional;
+
     @Column(nullable = false)
     private Integer estoque;
 
