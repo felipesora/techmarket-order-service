@@ -62,6 +62,19 @@ public class PedidoService {
         return pedidos.map(PedidoMapper::toResponseDTO);
     }
 
+    public Page<PedidoResponseDTO> buscarPedidosDeHoje(Pageable paginacao) {
+        ZoneId zone = ZoneId.of("America/Sao_Paulo");
+
+        OffsetDateTime inicioDoDia = LocalDate.now(zone)
+                .atStartOfDay(zone)
+                .toOffsetDateTime();
+
+        OffsetDateTime fimDoDia = inicioDoDia.plusDays(1);
+
+        var pedidos = pedidoRepository.findByPedidosDeHoje(paginacao, inicioDoDia, fimDoDia);
+        return pedidos.map(PedidoMapper::toResponseDTO);
+    }
+
     public Long contarPedidosDeHoje() {
         ZoneId zone = ZoneId.of("America/Sao_Paulo");
 

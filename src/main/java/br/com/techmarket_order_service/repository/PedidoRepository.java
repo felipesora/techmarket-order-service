@@ -16,6 +16,17 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     Page<Pedido> findByIdUsuario(Long idUsuario, Pageable pageable);
 
     @Query("""
+    SELECT p
+    FROM Pedido p
+    WHERE p.dataCriacao >= :inicio
+    AND p.dataCriacao < :fim
+    """)
+    Page<Pedido> findByPedidosDeHoje(
+            Pageable pageable,
+            @Param("inicio") OffsetDateTime inicio,
+            @Param("fim") OffsetDateTime fim
+    );
+    @Query("""
     SELECT COUNT(p)
     FROM Pedido p
     WHERE p.dataCriacao >= :inicio
