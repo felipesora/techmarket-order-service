@@ -45,6 +45,12 @@ public class PedidoController {
         return ResponseEntity.ok(pedidos);
     }
 
+    @GetMapping("/hoje")
+    public ResponseEntity<Page<PedidoResponseDTO>> buscarPedidosDeHoje(@PageableDefault(size = 10, sort = "dataCriacao", direction = Sort.Direction.DESC) Pageable paginacao) {
+        Page<PedidoResponseDTO> pedidos = pedidoService.buscarPedidosDeHoje(paginacao);
+        return ResponseEntity.ok(pedidos);
+    }
+
     @GetMapping("/hoje/quantidade")
     public ResponseEntity<Long> quantidadePedidosHoje() {
         Long quantidade = pedidoService.contarPedidosDeHoje();
